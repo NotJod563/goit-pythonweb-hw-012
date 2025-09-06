@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15
+    container_name: contacts_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: contacts_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  mailhog:
+    image: mailhog/mailhog
+    container_name: contacts_mailhog
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"
+  
+  redis:
+    image: redis:7
+    container_name: contacts_redis
+    ports:
+      - "6379:6379"  
+  web:
+    build: .
+    container_name: contacts_api
+    depends_on:
+      - db
+      - redis
+      - mailhog
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgres@db:5432/contacts_db"
+      PYTHONPATH: "/app"
+      SECRET_KEY: "CHANGE_ME_very_secret_key"
+      ALGORITHM: "HS256"
+      ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+      REDIS_URL: "redis://redis:6379/0"
+      SMTP_HOST: "contacts_mailhog"
+      SMTP_PORT: "1025"
+      SMTP_USER: ""
+      SMTP_PASSWORD: ""
+      SMTP_FROM: "no-reply@example.com"
+      CLOUDINARY_URL: ${CLOUDINARY_URL}
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command: ["uvicorn","app.main:app","--host","0.0.0.0","--port","8000","--reload"]
+
+volumes:
+  postgres_data:

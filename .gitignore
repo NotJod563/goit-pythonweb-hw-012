@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual env
+venv/
+ENV/
+.env
+
+# VS Code
+.vscode/
+
+# Alembic cache
+migrations/__pycache__/
+migrations/versions/__pycache__/
+
+# Byte-compiled or cache
+*.log
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Docker
+*.db
+*.pid
+*.sock
+*.tar
+*.log
+
+# MyPy / coverage / pytest
+.mypy_cache/
+.coverage
+htmlcov/
+.cache/
+
+# Env variables
+.env
+.env.*
