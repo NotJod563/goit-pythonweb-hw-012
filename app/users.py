@@ -54,7 +54,7 @@ async def upload_avatar(
         raise HTTPException(status_code=500, detail=f"Upload failed: {e}")
 
 
-# --- Лише для адміністраторів: скинути аватар користувачу на дефолтний ---
+# --- Дефолтна аватарка для адмінів ---
 @router.post(
     "/avatar/default",
     response_model=schemas.UserOut,
@@ -74,7 +74,7 @@ async def set_default_avatar(
     return user
 
 
-# Лише для адміністраторів: змінити роль користувача ---
+# Адміністратор може змінювати роль юзерів ---
 @router.patch(
     "/{user_id}/role",
     response_model=schemas.UserOut,
@@ -89,7 +89,6 @@ async def update_user_role(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # Перевірка валідності ролі додатково до Pydantic (на випадок майбутніх enum-ролей)
     if body.role not in ("user", "admin"):
         raise HTTPException(status_code=400, detail="Invalid role")
 
