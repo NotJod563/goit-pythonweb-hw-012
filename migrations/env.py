@@ -24,7 +24,6 @@ config.set_main_option("sqlalchemy.url", SQLALCHEMY_DATABASE_URL)
 target_metadata = Base.metadata
 
 def run_migrations_offline():
-    """Запуск міграцій в офлайн-режимі."""
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
@@ -36,7 +35,6 @@ def run_migrations_offline():
         context.run_migrations()
 
 def run_migrations_online():
-    """Запуск міграцій в онлайн-режимі (через engine)."""
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
         prefix="sqlalchemy.",

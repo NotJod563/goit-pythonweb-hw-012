@@ -191,3 +191,4 @@ def upcoming_birthdays(
         if today <= nb <= end:
             result.append(c)
     return result
+

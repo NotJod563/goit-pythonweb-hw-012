@@ -4,12 +4,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi_limiter import FastAPILimiter
-
 import cloudinary
 
 from app.config import settings
 from app.auth import router as auth_router
 from app.users import router as users_router
+from app.database import engine
+from app.models import Base 
 
 contacts_router = None
 try:
@@ -18,13 +19,17 @@ except ModuleNotFoundError:
     try:
         from app.routers.contacts import router as contacts_router
     except ModuleNotFoundError:
-        contacts_router = None  
+        contacts_router = None
 
 app = FastAPI(title="Contacts API", version="1.0.0")
 
+@app.get("/")
+def root():
+    return {"message": "Contact API"}
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],        
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -32,12 +37,16 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup():
+    Base.metadata.create_all(bind=engine)
+
     cloudinary.config(cloudinary_url=settings.CLOUDINARY_URL)
 
     for _ in range(10):
         try:
             r = await redis.from_url(
-                settings.REDIS_URL, encoding="utf-8", decode_responses=True
+                settings.REDIS_URL,
+                encoding="utf-8",
+                decode_responses=True,
             )
             await FastAPILimiter.init(r)
             break
@@ -49,9 +58,7 @@ app.include_router(users_router)
 if contacts_router:
     app.include_router(contacts_router)
 
-
 app.openapi_schema = None
-
 PUBLIC_PATHS = {
     ("/auth/signup", "post"),
     ("/auth/login", "post"),
@@ -61,6 +68,7 @@ PUBLIC_PATHS = {
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
+
     openapi_schema = get_openapi(
         title=app.title,
         version=app.version,

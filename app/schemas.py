@@ -1,25 +1,28 @@
 from pydantic import BaseModel, EmailStr
 from datetime import date
-from typing import Optional
+from typing import Optional, Literal
 
-# ------ Users ------
+
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
+
 
 class UserOut(BaseModel):
     id: int
     email: EmailStr
     is_verified: bool
     avatar_url: Optional[str] = None
+
     class Config:
         from_attributes = True
+
 
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
 
-# ------ Contacts ------
+
 class ContactBase(BaseModel):
     name: str
     last_name: str
@@ -28,8 +31,10 @@ class ContactBase(BaseModel):
     birthday: Optional[date] = None
     extra: Optional[str] = None
 
+
 class ContactCreate(ContactBase):
     pass
+
 
 class ContactUpdate(BaseModel):
     name: Optional[str] = None
@@ -39,8 +44,30 @@ class ContactUpdate(BaseModel):
     birthday: Optional[date] = None
     extra: Optional[str] = None
 
-class Contact(ContactBase):
+
+class Contact(BaseModel):
     id: int
     owner_id: int
+    name: str
+    last_name: str
+    email: EmailStr
+    phone: str
+    birthday: Optional[date] = None
+    extra: Optional[str] = None
+
     class Config:
         from_attributes = True
+
+
+class ResetRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetConfirm(BaseModel):
+    token: str
+    new_password: str
+
+
+# --- лише admin ---
+class UserRoleUpdate(BaseModel):
+    role: Literal["user", "admin"]

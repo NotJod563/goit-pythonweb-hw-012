@@ -47,3 +47,10 @@ def get_upcoming_birthdays(db: Session, owner_id: int, days: int = 7):
             results.append((next_bday, c))
     results.sort(key=lambda t: t[0])
     return [c for _, c in results]
+
+def search_contacts(db: Session, owner_id: int, query: str):
+    return db.query(models.Contact).filter(
+        models.Contact.owner_id == owner_id,
+        models.Contact.name.ilike(f"%{query}%")
+    ).all()
+
