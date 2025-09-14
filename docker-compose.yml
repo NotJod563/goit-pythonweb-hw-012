@@ -3,7 +3,7 @@ version: "3.8"
 services:
   db:
     image: postgres:15
-    container_name: contacts_db
+    container_name: contacts_db_hw12
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -14,19 +14,19 @@ services:
       - postgres_data:/var/lib/postgresql/data
   mailhog:
     image: mailhog/mailhog
-    container_name: contacts_mailhog
+    container_name: contacts_mailhog_hw12
     ports:
       - "1025:1025"   # SMTP
       - "8025:8025"
   
   redis:
     image: redis:7
-    container_name: contacts_redis
+    container_name: contacts_redis_hw12
     ports:
       - "6379:6379"  
   web:
     build: .
-    container_name: contacts_api
+    container_name: contacts_api_hw12
     depends_on:
       - db
       - redis
